@@ -1,0 +1,9 @@
+{
+  "Size": [6, 6],
+  "Vehicles": [
+    { "Name": "A", "Row": 0, "Col": 3, "Length": 2, "Orientation": "H" },
+    { "Name": "B", "Row": 1, "Col": 4, "Length": 2, "Orientation": "V" },
+    { "Name": "C", "Row": 3, "Col": 0, "Length": 2, "Orientation": "H" },
+    { "Name": "X", "Row": 2, "Col": 0, "Length": 2, "Orientation": "H" }
+  ]
+}
