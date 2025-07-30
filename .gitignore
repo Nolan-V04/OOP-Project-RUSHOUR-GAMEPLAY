@@ -8,3 +8,4 @@ obj/
 .vs/
 build/
 *.mp4
+*.sln
