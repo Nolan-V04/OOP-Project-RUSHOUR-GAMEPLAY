@@ -59,7 +59,7 @@ namespace RushHourGame.GameCore
             int cellWidth = panelSize.Width / Cols;
             int cellHeight = panelSize.Height / Rows;
 
-            // Vẽ lưới (nếu muốn)
+            // Vẽ lưới
             using Pen gridPen = new Pen(Color.LightGray);
             for (int i = 0; i <= Rows; i++)
                 g.DrawLine(gridPen, 0, i * cellHeight, panelSize.Width, i * cellHeight);

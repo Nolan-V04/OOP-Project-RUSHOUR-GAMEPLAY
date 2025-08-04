@@ -23,9 +23,7 @@ namespace RushHourGame.GameCore
             CarImage = LoadCarImage(Name, IsHorizontal);
         }
 
-        /// <summary>
         /// Kiểm tra xem xe có chiếm ô (r, c) không
-        /// </summary>
         public bool Occupies(int r, int c)
         {
             for (int i = 0; i < Length; i++)
@@ -38,18 +36,13 @@ namespace RushHourGame.GameCore
             return false;
         }
 
-        /// <summary>
         /// Tạo bản sao xe (phục vụ undo)
-        /// </summary>
         public Car Clone()
         {
-            // Clone không cần sao chép ảnh vì ảnh là không thay đổi
             return new Car(Name, Row, Col, Length, IsHorizontal ? "H" : "V");
         }
 
-        /// <summary>
         /// Tải ảnh xe dựa vào tên và hướng
-        /// </summary>
         private Image? LoadCarImage(string name, bool isHorizontal)
         {
             string direction = isHorizontal ? "H" : "V";

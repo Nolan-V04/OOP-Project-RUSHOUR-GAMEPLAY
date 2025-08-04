@@ -85,10 +85,10 @@ namespace RushHourGame.Forms
 
             var ruleLabel = new Label
             {
-                Text = "📜 Hướng dẫn chơi:\n\n" +
-                       "🎯 Mục tiêu: Đưa xe đỏ (X) ra lối thoát bên phải.\n" +
-                       "🟥 Kéo các xe khác để mở đường.\n" +
-                       "🧠 Sử dụng chiến lược và logic để giải đố!",
+                Text = "Hướng dẫn chơi:\n\n" +
+                       "Mục tiêu: Đưa xe đỏ (X) ra lối thoát bên phải.\n" +
+                       "Kéo các xe khác để mở đường.\n" +
+                       "Sử dụng chiến lược và logic để giải đố!",
                 Font = new Font("Segoe UI", 12),
                 AutoSize = true,
                 Location = new Point(50, 50)
@@ -147,7 +147,7 @@ namespace RushHourGame.Forms
             var resetBtn = new Button { Text = "Reset", Left = 100, Top = 10, Width = 80, Height = 30 };
             var loadBtn = new Button { Text = "Load", Left = 190, Top = 10, Width = 80, Height = 30 };
             var backBtn = new Button { Text = "Menu", Left = 280, Top = 10, Width = 80, Height = 30 };
-            moveLabel = new Label { Text = "Bước: 0", Left = 370, Top = 15, AutoSize = true };
+            moveLabel = new Label { Text = "Step: 0", Left = 370, Top = 15, AutoSize = true };
 
             levelSelector = new ComboBox { Left = 460, Top = 10, Width = 100 };
             for (int i = 1; i <= maxLevel; i++) levelSelector.Items.Add($"level{i}");
@@ -209,7 +209,7 @@ namespace RushHourGame.Forms
                 if (moved)
                 {
                     moveCount++;
-                    moveLabel.Text = $"Bước: {moveCount}";
+                    moveLabel.Text = $"Step: {moveCount}";
                     mouseStart = e.Location;
                     boardPanel.Invalidate();
 
@@ -234,7 +234,7 @@ namespace RushHourGame.Forms
             {
                 board.Cars = history.Pop();
                 moveCount = Math.Max(0, moveCount - 1);
-                moveLabel.Text = $"Bước: {moveCount}";
+                moveLabel.Text = $"Step: {moveCount}";
                 boardPanel.Invalidate();
             }
         }
@@ -249,7 +249,7 @@ namespace RushHourGame.Forms
             foreach (var v in level.Vehicles)
                 board.AddCar(new Car(v.Name, v.Row, v.Col, v.Length, v.Orientation));
             moveCount = 0;
-            moveLabel.Text = "Bước: 0";
+            moveLabel.Text = "Step: 0";
             history.Clear();
             boardPanel.Invalidate();
 
@@ -266,7 +266,7 @@ namespace RushHourGame.Forms
                 foreach (var v in level.Vehicles)
                     board.AddCar(new Car(v.Name, v.Row, v.Col, v.Length, v.Orientation));
                 moveCount = 0;
-                moveLabel.Text = "Bước: 0";
+                moveLabel.Text = "Step: 0";
                 history.Clear();
                 boardPanel.Invalidate();
             }
@@ -277,7 +277,7 @@ namespace RushHourGame.Forms
             if (currentLevelNumber < maxLevel)
             {
                 var result = MessageBox.Show(
-                    $"🎉 Bạn đã thắng level {currentLevelNumber}!\nChuyển sang level {currentLevelNumber + 1}?",
+                    $"Bạn đã thắng level {currentLevelNumber}!\nChuyển sang level {currentLevelNumber + 1}?",
                     "Chiến thắng",
                     MessageBoxButtons.YesNo
                 );
@@ -294,7 +294,7 @@ namespace RushHourGame.Forms
             }
             else
             {
-                MessageBox.Show("🎉 Bạn đã phá đảo toàn bộ 10 màn chơi! Xuất sắc!", "Hoàn thành");
+                MessageBox.Show("Bạn đã phá đảo toàn bộ 10 màn chơi! Xuất sắc!", "Hoàn thành");
                 gamePanel.Visible = false;
                 mainMenuPanel.Visible = true;
             }
