@@ -49,21 +49,21 @@ namespace RushHourGame.Forms
 
             var playBtn = new Button
             {
-                Text = "▶ Play",
+                Text = "Play",
                 Size = new Size(200, 40),
                 Location = new Point(200, 120)
             };
 
             var ruleBtn = new Button
             {
-                Text = "📜 Rule of Play",
+                Text = "Rule of Play",
                 Size = new Size(200, 40),
                 Location = new Point(200, 180)
             };
 
             var quitBtn = new Button
             {
-                Text = "❌ Quit",
+                Text = "Quit",
                 Size = new Size(200, 40),
                 Location = new Point(200, 240)
             };
