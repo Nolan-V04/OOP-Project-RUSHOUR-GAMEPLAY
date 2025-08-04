@@ -54,32 +54,41 @@ namespace RushHourGame.GameCore
             return true;
         }
 
-        public void DrawGraphics(Graphics g, Size size)
+        public void DrawGraphics(Graphics g, Size panelSize)
         {
-            int cellWidth = size.Width / Cols;
-            int cellHeight = size.Height / Rows;
+            int cellWidth = panelSize.Width / Cols;
+            int cellHeight = panelSize.Height / Rows;
 
-            g.Clear(Color.White);
-            Pen gridPen = Pens.Gray;
-
+            // Vẽ lưới (nếu muốn)
+            using Pen gridPen = new Pen(Color.LightGray);
             for (int i = 0; i <= Rows; i++)
-                g.DrawLine(gridPen, 0, i * cellHeight, size.Width, i * cellHeight);
+                g.DrawLine(gridPen, 0, i * cellHeight, panelSize.Width, i * cellHeight);
+            for (int j = 0; j <= Cols; j++)
+                g.DrawLine(gridPen, j * cellWidth, 0, j * cellWidth, panelSize.Height);
 
-            for (int i = 0; i <= Cols; i++)
-                g.DrawLine(gridPen, i * cellWidth, 0, i * cellWidth, size.Height);
-
+            // Vẽ từng xe
             foreach (var car in Cars)
             {
-                Rectangle rect = new(
-                    car.Col * cellWidth,
-                    car.Row * cellHeight,
-                    (car.IsHorizontal ? car.Length : 1) * cellWidth,
-                    (car.IsHorizontal ? 1 : car.Length) * cellHeight
-                );
-                g.FillRectangle(car.Name == "X" ? Brushes.Red : Brushes.Blue, rect);
-                g.DrawRectangle(Pens.Black, rect);
+                int x = car.Col * cellWidth;
+                int y = car.Row * cellHeight;
+                int w = car.IsHorizontal ? car.Length * cellWidth : cellWidth;
+                int h = car.IsHorizontal ? cellHeight : car.Length * cellHeight;
+
+                if (car.CarImage != null)
+                {
+                    g.DrawImage(car.CarImage, new Rectangle(x, y, w, h));
+                }
+                else
+                {
+                    // fallback nếu không có ảnh
+                    Brush fill = car.Name == "X" ? Brushes.Red : Brushes.Gray;
+                    g.FillRectangle(fill, x, y, w, h);
+                    g.DrawRectangle(Pens.Black, x, y, w, h);
+                    g.DrawString(car.Name, SystemFonts.DefaultFont, Brushes.White, x + 5, y + 5);
+                }
             }
         }
+
 
         public List<Car> CloneCars() => Cars.Select(c => c.Clone()).ToList();
 
