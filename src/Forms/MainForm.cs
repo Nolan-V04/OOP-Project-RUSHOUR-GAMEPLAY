@@ -15,15 +15,16 @@ namespace RushHourGame.Forms
         private int moveCount = 0;
         private Label moveLabel;
         private Stack<List<Car>> history = new();
-        private string currentLevelPath = "levels/level1.json";
+        private int currentLevelNumber = 1;
+        private const int maxLevel = 10;
+        private string currentLevelPath = "";
+
         private ComboBox levelSelector;
 
         private Panel mainMenuPanel;
         private Panel rulePanel;
-
         private Panel gamePanel;
         private Panel boardPanel;
-
 
         public MainForm()
         {
@@ -72,8 +73,9 @@ namespace RushHourGame.Forms
             {
                 mainMenuPanel.Visible = false;
                 gamePanel.Visible = true;
-                ReloadLevel();
+                LoadLevel(currentLevelNumber);
             };
+
             rulePanel = new DoubleBufferedPanel()
             {
                 Dock = DockStyle.Fill,
@@ -84,9 +86,9 @@ namespace RushHourGame.Forms
             var ruleLabel = new Label
             {
                 Text = "📜 Hướng dẫn chơi:\n\n" +
-                    "🎯 Mục tiêu: Đưa xe đỏ (X) ra lối thoát bên phải.\n" +
-                    "🟥 Kéo các xe khác để mở đường.\n" +
-                    "🧠 Sử dụng chiến lược và logic để giải đố!",
+                       "🎯 Mục tiêu: Đưa xe đỏ (X) ra lối thoát bên phải.\n" +
+                       "🟥 Kéo các xe khác để mở đường.\n" +
+                       "🧠 Sử dụng chiến lược và logic để giải đố!",
                 Font = new Font("Segoe UI", 12),
                 AutoSize = true,
                 Location = new Point(50, 50)
@@ -107,8 +109,6 @@ namespace RushHourGame.Forms
             rulePanel.Controls.Add(ruleLabel);
             rulePanel.Controls.Add(backBtn);
             this.Controls.Add(rulePanel);
-
-            
 
             ruleBtn.Click += (s, e) =>
             {
@@ -150,15 +150,15 @@ namespace RushHourGame.Forms
             moveLabel = new Label { Text = "Bước: 0", Left = 370, Top = 15, AutoSize = true };
 
             levelSelector = new ComboBox { Left = 460, Top = 10, Width = 100 };
-            for (int i = 1; i <= 10; i++) levelSelector.Items.Add($"level{i}");
+            for (int i = 1; i <= maxLevel; i++) levelSelector.Items.Add($"level{i}");
             levelSelector.SelectedIndexChanged += (s, e) =>
             {
-                if (levelSelector.SelectedItem is string levelName)
-                    LoadLevel($"levels/{levelName}.json");
+                if (levelSelector.SelectedItem is string levelName && int.TryParse(levelName.Replace("level", ""), out int num))
+                    LoadLevel(num);
             };
 
             undoBtn.Click += (s, e) => Undo();
-            resetBtn.Click += (s, e) => ReloadLevel();
+            resetBtn.Click += (s, e) => LoadLevel(currentLevelNumber);
             loadBtn.Click += (s, e) => LoadLevelFromFile();
             backBtn.Click += (s, e) =>
             {
@@ -171,7 +171,6 @@ namespace RushHourGame.Forms
                 undoBtn, resetBtn, loadBtn, backBtn, moveLabel, levelSelector
             });
 
-            // Gán xử lý bản đồ vào boardPanel
             boardPanel.Paint += (s, e) => board?.DrawGraphics(e.Graphics, boardPanel.ClientSize);
             boardPanel.MouseDown += (s, e) => MainForm_MouseDown(s, e);
             boardPanel.MouseMove += (s, e) => MainForm_MouseMove(s, e);
@@ -183,13 +182,12 @@ namespace RushHourGame.Forms
             this.Controls.Add(gamePanel);
         }
 
-
         private void MainForm_MouseDown(object? sender, MouseEventArgs e)
         {
             if (board == null) return;
 
-            int cw = this.ClientSize.Width / board.Cols;
-            int ch = this.ClientSize.Height / board.Rows;
+            int cw = boardPanel.ClientSize.Width / board.Cols;
+            int ch = boardPanel.ClientSize.Height / board.Rows;
             int col = e.X / cw;
             int row = e.Y / ch;
 
@@ -201,8 +199,8 @@ namespace RushHourGame.Forms
         {
             if (selectedCar == null || board == null || e.Button != MouseButtons.Left) return;
 
-            int dx = (e.X - mouseStart.X) / (this.ClientSize.Width / board.Cols);
-            int dy = (e.Y - mouseStart.Y) / (this.ClientSize.Height / board.Rows);
+            int dx = (e.X - mouseStart.X) / (boardPanel.ClientSize.Width / board.Cols);
+            int dy = (e.Y - mouseStart.Y) / (boardPanel.ClientSize.Height / board.Rows);
 
             if ((selectedCar.IsHorizontal && dx != 0) || (!selectedCar.IsHorizontal && dy != 0))
             {
@@ -241,12 +239,12 @@ namespace RushHourGame.Forms
             }
         }
 
-        private void ReloadLevel() => LoadLevel(currentLevelPath);
-
-        private void LoadLevel(string path)
+        private void LoadLevel(int levelNumber)
         {
-            currentLevelPath = path;
-            LevelMap level = LevelLoader.LoadLevel(path)!;
+            currentLevelNumber = levelNumber;
+            currentLevelPath = $"levels/level{levelNumber}.json";
+
+            LevelMap level = LevelLoader.LoadLevel(currentLevelPath)!;
             board = new Board(level.Size[0], level.Size[1]);
             foreach (var v in level.Vehicles)
                 board.AddCar(new Car(v.Name, v.Row, v.Col, v.Length, v.Orientation));
@@ -254,6 +252,8 @@ namespace RushHourGame.Forms
             moveLabel.Text = "Bước: 0";
             history.Clear();
             boardPanel.Invalidate();
+
+            levelSelector.SelectedIndex = levelNumber - 1;
         }
 
         private void LoadLevelFromFile()
@@ -261,15 +261,43 @@ namespace RushHourGame.Forms
             OpenFileDialog ofd = new OpenFileDialog { Filter = "JSON files (*.json)|*.json" };
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                LoadLevel(ofd.FileName);
+                LevelMap level = LevelLoader.LoadLevel(ofd.FileName)!;
+                board = new Board(level.Size[0], level.Size[1]);
+                foreach (var v in level.Vehicles)
+                    board.AddCar(new Car(v.Name, v.Row, v.Col, v.Length, v.Orientation));
+                moveCount = 0;
+                moveLabel.Text = "Bước: 0";
+                history.Clear();
+                boardPanel.Invalidate();
             }
         }
 
         private void ShowWinDialog()
         {
-            var result = MessageBox.Show("🎉 Bạn đã thắng! Chơi lại?", "Chiến thắng", MessageBoxButtons.YesNo);
-            if (result == DialogResult.Yes) ReloadLevel();
-            else Application.Exit();
+            if (currentLevelNumber < maxLevel)
+            {
+                var result = MessageBox.Show(
+                    $"🎉 Bạn đã thắng level {currentLevelNumber}!\nChuyển sang level {currentLevelNumber + 1}?",
+                    "Chiến thắng",
+                    MessageBoxButtons.YesNo
+                );
+
+                if (result == DialogResult.Yes)
+                {
+                    LoadLevel(currentLevelNumber + 1);
+                }
+                else
+                {
+                    gamePanel.Visible = false;
+                    mainMenuPanel.Visible = true;
+                }
+            }
+            else
+            {
+                MessageBox.Show("🎉 Bạn đã phá đảo toàn bộ 10 màn chơi! Xuất sắc!", "Hoàn thành");
+                gamePanel.Visible = false;
+                mainMenuPanel.Visible = true;
+            }
         }
     }
 }
