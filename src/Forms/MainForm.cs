@@ -29,7 +29,7 @@ namespace RushHourGame.Forms
         public MainForm()
         {
             this.Text = "Rush Hour Game";
-            this.ClientSize = new Size(600, 600);
+            this.ClientSize = new Size(900, 650);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.DoubleBuffered = true;
 
@@ -48,25 +48,31 @@ namespace RushHourGame.Forms
                 BackColor = Color.White
             };
 
+            int buttonWidth = 300;
+            int buttonHeight = 50;
+            int spacing = 30;
+            int centerX = (this.ClientSize.Width - buttonWidth) / 2;
+            int startY = (this.ClientSize.Height - (buttonHeight * 6 + spacing * 2)) / 2;
+
             var playBtn = new Button
             {
                 Text = "Play",
-                Size = new Size(200, 40),
-                Location = new Point(200, 120)
+                Size = new Size(buttonWidth, buttonHeight),
+                Location = new Point(centerX, startY)
             };
 
             var ruleBtn = new Button
             {
                 Text = "Rule of Play",
-                Size = new Size(200, 40),
-                Location = new Point(200, 180)
+                Size = new Size(buttonWidth, buttonHeight),
+                Location = new Point(centerX, startY + buttonHeight + spacing)
             };
 
             var quitBtn = new Button
             {
                 Text = "Quit",
-                Size = new Size(200, 40),
-                Location = new Point(200, 240)
+                Size = new Size(buttonWidth, buttonHeight),
+                Location = new Point(centerX, startY + (buttonHeight + spacing) * 2)
             };
 
             playBtn.Click += (s, e) =>
@@ -130,32 +136,32 @@ namespace RushHourGame.Forms
                 BackColor = Color.LightGray
             };
 
-            var topPanel = new DoubleBufferedPanel()
-            {
-                Height = 50,
-                Dock = DockStyle.Top,
-                BackColor = Color.White
-            };
-
             boardPanel = new DoubleBufferedPanel()
             {
-                Dock = DockStyle.Fill,
+                Size = new Size(600, 600),
+                Location = new Point(20, 20),
                 BackColor = Color.White
             };
 
-            var undoBtn = new Button { Text = "Undo", Left = 10, Top = 10, Width = 80, Height = 30 };
-            var resetBtn = new Button { Text = "Reset", Left = 100, Top = 10, Width = 80, Height = 30 };
-            var loadBtn = new Button { Text = "Load", Left = 190, Top = 10, Width = 80, Height = 30 };
-            var backBtn = new Button { Text = "Menu", Left = 280, Top = 10, Width = 80, Height = 30 };
-            moveLabel = new Label { Text = "Step: 0", Left = 370, Top = 15, AutoSize = true };
+            boardPanel.Paint += (s, e) => board?.DrawGraphics(e.Graphics, boardPanel.ClientSize);
+            boardPanel.MouseDown += (s, e) => MainForm_MouseDown(s, e);
+            boardPanel.MouseMove += (s, e) => MainForm_MouseMove(s, e);
+            boardPanel.MouseUp += (s, e) => selectedCar = null;
 
-            levelSelector = new ComboBox { Left = 460, Top = 10, Width = 100 };
-            for (int i = 1; i <= maxLevel; i++) levelSelector.Items.Add($"level{i}");
-            levelSelector.SelectedIndexChanged += (s, e) =>
+            var infoPanel = new Panel
             {
-                if (levelSelector.SelectedItem is string levelName && int.TryParse(levelName.Replace("level", ""), out int num))
-                    LoadLevel(num);
+                Width = 200,
+                Dock = DockStyle.Right,
+                BackColor = Color.LightSteelBlue
             };
+
+            var undoBtn = new Button { Text = "Undo", Top = 10, Left = 10, Width = 180, Height = 30 };
+            var resetBtn = new Button { Text = "Reset", Top = 50, Left = 10, Width = 180, Height = 30 };
+            var loadBtn = new Button { Text = "Load", Top = 90, Left = 10, Width = 180, Height = 30 };
+            var backBtn = new Button { Text = "Menu", Top = 130, Left = 10, Width = 180, Height = 30 };
+            moveLabel = new Label { Text = "Step: 0", Top = 180, Left = 10, AutoSize = true };
+            levelSelector = new ComboBox { Top = 210, Left = 10, Width = 180 };
+            for (int i = 1; i <= maxLevel; i++) levelSelector.Items.Add($"level{i}");
 
             undoBtn.Click += (s, e) => Undo();
             resetBtn.Click += (s, e) => LoadLevel(currentLevelNumber);
@@ -165,19 +171,18 @@ namespace RushHourGame.Forms
                 gamePanel.Visible = false;
                 mainMenuPanel.Visible = true;
             };
-
-            topPanel.Controls.AddRange(new Control[]
+            levelSelector.SelectedIndexChanged += (s, e) =>
             {
+                if (levelSelector.SelectedItem is string levelName && int.TryParse(levelName.Replace("level", ""), out int num))
+                    LoadLevel(num);
+            };
+
+            infoPanel.Controls.AddRange(new Control[] {
                 undoBtn, resetBtn, loadBtn, backBtn, moveLabel, levelSelector
             });
 
-            boardPanel.Paint += (s, e) => board?.DrawGraphics(e.Graphics, boardPanel.ClientSize);
-            boardPanel.MouseDown += (s, e) => MainForm_MouseDown(s, e);
-            boardPanel.MouseMove += (s, e) => MainForm_MouseMove(s, e);
-            boardPanel.MouseUp += (s, e) => selectedCar = null;
-
             gamePanel.Controls.Add(boardPanel);
-            gamePanel.Controls.Add(topPanel);
+            gamePanel.Controls.Add(infoPanel);
 
             this.Controls.Add(gamePanel);
         }

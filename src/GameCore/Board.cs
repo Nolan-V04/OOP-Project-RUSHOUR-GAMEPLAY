@@ -56,8 +56,8 @@ namespace RushHourGame.GameCore
 
         public void DrawGraphics(Graphics g, Size panelSize)
         {
-            int cellWidth = panelSize.Width / Cols;
-            int cellHeight = panelSize.Height / Rows;
+            int cellWidth = 100;
+            int cellHeight = 100;
 
             // Vẽ lưới
             using Pen gridPen = new Pen(Color.LightGray);
