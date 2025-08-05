@@ -46,7 +46,7 @@ namespace RushHourGame.GameCore
         private Image? LoadCarImage(string name, bool isHorizontal)
         {
             string direction = isHorizontal ? "H" : "V";
-            string path = $"img/{name}{direction}.png";
+            string path = $"img/Car/{name}{direction}.png";
 
             try
             {

@@ -26,12 +26,29 @@ namespace RushHourGame.Forms
         private Panel gamePanel;
         private Panel boardPanel;
 
+        private Image? backgroundImg;
+
         public MainForm()
         {
             this.Text = "Rush Hour Game";
             this.ClientSize = new Size(900, 650);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.DoubleBuffered = true;
+
+            try
+            {
+                backgroundImg = Image.FromFile("img/Bg/menu_bg.jpg"); // path to your image
+            }
+            catch
+            {
+                backgroundImg = null;
+            }
+
+            InitializeMainMenu();
+            InitializeGameUI();
+
+            mainMenuPanel.Visible = true;
+            gamePanel.Visible = false;
 
             InitializeMainMenu();
             InitializeGameUI();
@@ -139,7 +156,7 @@ namespace RushHourGame.Forms
             boardPanel = new DoubleBufferedPanel()
             {
                 Size = new Size(600, 600),
-                Location = new Point(20, 20),
+                Location = new Point(45, 22),
                 BackColor = Color.White
             };
 
@@ -157,7 +174,7 @@ namespace RushHourGame.Forms
 
             var undoBtn = new Button { Text = "Undo", Top = 10, Left = 10, Width = 180, Height = 30 };
             var resetBtn = new Button { Text = "Reset", Top = 50, Left = 10, Width = 180, Height = 30 };
-            var loadBtn = new Button { Text = "Load", Top = 90, Left = 10, Width = 180, Height = 30 };
+            var loadBtn = new Button { Text = "Load Map From PC", Top = 90, Left = 10, Width = 180, Height = 30 };
             var backBtn = new Button { Text = "Menu", Top = 130, Left = 10, Width = 180, Height = 30 };
             moveLabel = new Label { Text = "Step: 0", Top = 180, Left = 10, AutoSize = true };
             levelSelector = new ComboBox { Top = 210, Left = 10, Width = 180 };
