@@ -49,12 +49,6 @@ namespace RushHourGame.Forms
 
             mainMenuPanel.Visible = true;
             gamePanel.Visible = false;
-
-            InitializeMainMenu();
-            InitializeGameUI();
-
-            mainMenuPanel.Visible = true;
-            gamePanel.Visible = false;
         }
 
         private void InitializeMainMenu()
@@ -63,6 +57,13 @@ namespace RushHourGame.Forms
             {
                 Dock = DockStyle.Fill,
                 BackColor = Color.White
+            };
+
+            mainMenuPanel.Paint += (s, e) =>
+            {
+                e.Graphics.Clear(mainMenuPanel.BackColor);
+                if (backgroundImg != null)
+                    e.Graphics.DrawImage(backgroundImg, mainMenuPanel.ClientRectangle);
             };
 
             int buttonWidth = 300;
