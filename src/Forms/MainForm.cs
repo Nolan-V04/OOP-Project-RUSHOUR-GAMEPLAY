@@ -161,10 +161,10 @@ namespace RushHourGame.Forms
                 BackColor = Color.White
             };
 
-            boardPanel.Paint += (s, e) => board?.DrawGraphics(e.Graphics, boardPanel.ClientSize);
+            boardPanel.Paint += (s, e) => board?.DrawGraphics(e.Graphics, boardPanel.ClientSize, selectedCar);
             boardPanel.MouseDown += (s, e) => MainForm_MouseDown(s, e);
             boardPanel.MouseMove += (s, e) => MainForm_MouseMove(s, e);
-            boardPanel.MouseUp += (s, e) => selectedCar = null;
+            //boardPanel.MouseUp += (s, e) => selectedCar = null;
 
             var infoPanel = new Panel
             {
@@ -214,7 +214,14 @@ namespace RushHourGame.Forms
             int col = e.X / cw;
             int row = e.Y / ch;
 
-            selectedCar = board.GetCarAt(row, col);
+            Car? clickedCar = board.GetCarAt(row, col);
+            
+            if (clickedCar != null && clickedCar != selectedCar)
+            {
+                selectedCar = clickedCar;
+                boardPanel.Invalidate(); // cập nhật lại hiệu ứng
+            }
+
             mouseStart = e.Location;
         }
 
@@ -269,8 +276,10 @@ namespace RushHourGame.Forms
 
             LevelMap level = LevelLoader.LoadLevel(currentLevelPath)!;
             board = new Board(level.Size[0], level.Size[1]);
+            board.OnBlink = () => boardPanel.Invalidate();
             foreach (var v in level.Vehicles)
                 board.AddCar(new Car(v.Name, v.Row, v.Col, v.Length, v.Orientation));
+            selectedCar = board.Cars.FirstOrDefault(c => c.Name == "X");
             moveCount = 0;
             moveLabel.Text = "Step: 0";
             history.Clear();
@@ -286,8 +295,11 @@ namespace RushHourGame.Forms
             {
                 LevelMap level = LevelLoader.LoadLevel(ofd.FileName)!;
                 board = new Board(level.Size[0], level.Size[1]);
+                board.OnBlink = () => boardPanel.Invalidate();
                 foreach (var v in level.Vehicles)
                     board.AddCar(new Car(v.Name, v.Row, v.Col, v.Length, v.Orientation));
+
+                selectedCar = board.Cars.FirstOrDefault(c => c.Name == "X");
                 moveCount = 0;
                 moveLabel.Text = "Step: 0";
                 history.Clear();

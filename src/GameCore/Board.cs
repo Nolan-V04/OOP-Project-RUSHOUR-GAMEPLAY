@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms; // Ensure we use Forms.Timer
 
 namespace RushHourGame.GameCore
 {
@@ -10,10 +12,23 @@ namespace RushHourGame.GameCore
         public int Cols { get; set; }
         public List<Car> Cars { get; set; } = new();
 
+        private bool blinkState = true;
+        private System.Windows.Forms.Timer blinkTimer;
+        public Action? OnBlink;
+
         public Board(int rows, int cols)
         {
             Rows = rows;
             Cols = cols;
+
+            blinkTimer = new System.Windows.Forms.Timer();
+            blinkTimer.Interval = 400;
+            blinkTimer.Tick += (s, e) =>
+            {
+                blinkState = !blinkState;
+                OnBlink?.Invoke();
+            };
+            blinkTimer.Start();
         }
 
         public void AddCar(Car car) => Cars.Add(car);
@@ -54,7 +69,7 @@ namespace RushHourGame.GameCore
             return true;
         }
 
-        public void DrawGraphics(Graphics g, Size panelSize)
+        public void DrawGraphics(Graphics g, Size panelSize, Car? selectedCar = null)
         {
             int cellWidth = 100;
             int cellHeight = 100;
@@ -80,15 +95,20 @@ namespace RushHourGame.GameCore
                 }
                 else
                 {
-                    // fallback nếu không có ảnh
                     Brush fill = car.Name == "X" ? Brushes.Red : Brushes.Gray;
                     g.FillRectangle(fill, x, y, w, h);
                     g.DrawRectangle(Pens.Black, x, y, w, h);
                     g.DrawString(car.Name, SystemFonts.DefaultFont, Brushes.White, x + 5, y + 5);
                 }
+
+                // Nếu xe đang được chọn thì vẽ hiệu ứng viền nhấp nháy
+                if (car == selectedCar && blinkState)
+                {
+                    using Pen blinkPen = new Pen(Color.LimeGreen, 4);
+                    g.DrawRectangle(blinkPen, x, y, w, h);
+                }
             }
         }
-
 
         public List<Car> CloneCars() => Cars.Select(c => c.Clone()).ToList();
 

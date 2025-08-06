@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using RushHourGame.Models;
+using RushHourGame.GameCore;
 
 namespace RushHourGame.GameCore
 {
@@ -26,5 +27,6 @@ namespace RushHourGame.GameCore
                 throw new InvalidDataException("Không thể phân tích nội dung JSON: " + ex.Message, ex);
             }
         }
+        
     }
 }
