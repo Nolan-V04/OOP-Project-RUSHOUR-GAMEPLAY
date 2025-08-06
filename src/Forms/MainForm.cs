@@ -66,29 +66,32 @@ namespace RushHourGame.Forms
                     e.Graphics.DrawImage(backgroundImg, mainMenuPanel.ClientRectangle);
             };
 
-            int buttonWidth = 300;
-            int buttonHeight = 50;
+            int buttonWidth = 400;
+            int buttonHeight = 100;
             int spacing = 30;
             int centerX = (this.ClientSize.Width - buttonWidth) / 2;
-            int startY = (this.ClientSize.Height - (buttonHeight * 6 + spacing * 2)) / 2;
+            int startY = (this.ClientSize.Height - (buttonHeight * 4 + spacing)) / 2;
 
             var playBtn = new Button
             {
-                Text = "Play",
+                Text = "PLAY",
+                Font = new Font("Segoe UI", 15),
                 Size = new Size(buttonWidth, buttonHeight),
-                Location = new Point(centerX, startY)
+                Location = new Point(centerX, startY),
             };
 
             var ruleBtn = new Button
             {
-                Text = "Rule of Play",
+                Text = "RULE OF PLAY",
+                Font = new Font("Segoe UI", 15),
                 Size = new Size(buttonWidth, buttonHeight),
                 Location = new Point(centerX, startY + buttonHeight + spacing)
             };
 
             var quitBtn = new Button
             {
-                Text = "Quit",
+                Text = "QUIT",
+                Font = new Font("Segoe UI", 15),
                 Size = new Size(buttonWidth, buttonHeight),
                 Location = new Point(centerX, startY + (buttonHeight + spacing) * 2)
             };
