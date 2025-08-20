@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using RushHourGame.GameCore;
 using RushHourGame.Models;
 using System.Collections.Generic;
-using System.Threading.Tasks; // Thêm dòng này ở đầu file
+using System.Threading.Tasks;
 
 namespace RushHourGame.Forms
 {
@@ -183,8 +183,8 @@ namespace RushHourGame.Forms
             var loadBtn = new Button { Text = "Load Map From PC", Top = 90, Left = 10, Width = 180, Height = 30 };
             var backBtn = new Button { Text = "Menu", Top = 130, Left = 10, Width = 180, Height = 30 };
             moveLabel = new Label { Text = "Step: 0", Top = 180, Left = 10, AutoSize = true };
-            //minStepLabel = new Label { Text = "Min Step: ?", Top = 210, Left = 10, AutoSize = true }; // Đổi từ 200 lên 210
-            levelSelector = new ComboBox { Top = 240, Left = 10, Width = 180 }; // Đổi từ 210 lên 240
+            //minStepLabel = new Label { Text = "Min Step: ?", Top = 210, Left = 10, AutoSize = true };
+            levelSelector = new ComboBox { Top = 240, Left = 10, Width = 180 };
             for (int i = 1; i <= maxLevel; i++) levelSelector.Items.Add($"level{i}");
 
             undoBtn.Click += (s, e) => Undo();
@@ -316,7 +316,7 @@ namespace RushHourGame.Forms
                 history.Clear();
                 boardPanel.Invalidate();
 
-                //minStepLabel.Text = "Min Step: ..."; // Hiển thị đang tính
+                //minStepLabel.Text = "Min Step: ...";
 
                 //int minStep = await Task.Run(() => Algorithm.FindShortestSolution(board));
                 //minStepLabel.Text = minStep > 0 ? $"Min Step: {minStep}" : "Min Step: Không giải được";
