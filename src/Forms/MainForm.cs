@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using RushHourGame.GameCore;
 using RushHourGame.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks; // Thêm dòng này ở đầu file
 
 namespace RushHourGame.Forms
 {
@@ -14,6 +15,7 @@ namespace RushHourGame.Forms
         private Point mouseStart;
         private int moveCount = 0;
         private Label moveLabel;
+        private Label minStepLabel;
         private Stack<List<Car>> history = new();
         private int currentLevelNumber = 1;
         private const int maxLevel = 10;
@@ -37,7 +39,7 @@ namespace RushHourGame.Forms
 
             try
             {
-                backgroundImg = Image.FromFile("img/Bg/menu_bg.jpg"); // path to your image
+                backgroundImg = Image.FromFile("img/Bg/menu_bg.jpg");
             }
             catch
             {
@@ -181,7 +183,8 @@ namespace RushHourGame.Forms
             var loadBtn = new Button { Text = "Load Map From PC", Top = 90, Left = 10, Width = 180, Height = 30 };
             var backBtn = new Button { Text = "Menu", Top = 130, Left = 10, Width = 180, Height = 30 };
             moveLabel = new Label { Text = "Step: 0", Top = 180, Left = 10, AutoSize = true };
-            levelSelector = new ComboBox { Top = 210, Left = 10, Width = 180 };
+            //minStepLabel = new Label { Text = "Min Step: ?", Top = 210, Left = 10, AutoSize = true }; // Đổi từ 200 lên 210
+            levelSelector = new ComboBox { Top = 240, Left = 10, Width = 180 }; // Đổi từ 210 lên 240
             for (int i = 1; i <= maxLevel; i++) levelSelector.Items.Add($"level{i}");
 
             undoBtn.Click += (s, e) => Undo();
@@ -199,7 +202,7 @@ namespace RushHourGame.Forms
             };
 
             infoPanel.Controls.AddRange(new Control[] {
-                undoBtn, resetBtn, loadBtn, backBtn, moveLabel, levelSelector
+                undoBtn, resetBtn, loadBtn, backBtn, moveLabel, minStepLabel, levelSelector
             });
 
             gamePanel.Controls.Add(boardPanel);
@@ -222,7 +225,7 @@ namespace RushHourGame.Forms
             if (clickedCar != null && clickedCar != selectedCar)
             {
                 selectedCar = clickedCar;
-                boardPanel.Invalidate(); // cập nhật lại hiệu ứng
+                boardPanel.Invalidate();
             }
 
             mouseStart = e.Location;
@@ -272,7 +275,7 @@ namespace RushHourGame.Forms
             }
         }
 
-        private void LoadLevel(int levelNumber)
+        private async void LoadLevel(int levelNumber)
         {
             currentLevelNumber = levelNumber;
             currentLevelPath = $"levels/level{levelNumber}.json";
@@ -288,10 +291,15 @@ namespace RushHourGame.Forms
             history.Clear();
             boardPanel.Invalidate();
 
-            levelSelector.SelectedIndex = levelNumber - 1;
-        }
+            //minStepLabel.Text = "Min Step: ...";
 
-        private void LoadLevelFromFile()
+            //int minStep = await Task.Run(() => Algorithm.FindShortestSolution(board));
+            //minStepLabel.Text = minStep > 0 ? $"Min Step: {minStep}" : "Min Step: Không giải được";
+
+            levelSelector.SelectedIndex = levelNumber - 1;
+}
+
+        private async void LoadLevelFromFile()
         {
             OpenFileDialog ofd = new OpenFileDialog { Filter = "JSON files (*.json)|*.json" };
             if (ofd.ShowDialog() == DialogResult.OK)
@@ -307,6 +315,11 @@ namespace RushHourGame.Forms
                 moveLabel.Text = "Step: 0";
                 history.Clear();
                 boardPanel.Invalidate();
+
+                //minStepLabel.Text = "Min Step: ..."; // Hiển thị đang tính
+
+                //int minStep = await Task.Run(() => Algorithm.FindShortestSolution(board));
+                //minStepLabel.Text = minStep > 0 ? $"Min Step: {minStep}" : "Min Step: Không giải được";
             }
         }
 
@@ -332,7 +345,7 @@ namespace RushHourGame.Forms
             }
             else
             {
-                MessageBox.Show("Bạn đã phá đảo toàn bộ 10 màn chơi! Xuất sắc!", "Hoàn thành");
+                MessageBox.Show("Bạn đã phá đảo toàn bộ màn chơi! Xuất sắc!", "Hoàn thành");
                 gamePanel.Visible = false;
                 mainMenuPanel.Visible = true;
             }
